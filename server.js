@@ -29,12 +29,9 @@ app.get("/main.js", async (req, res) => {
   }
 });
 
-app.get("/jco_test.wasm", async (req, res) => {
+app.get("/:filename", async (req, res) => {
   try {
-    const filePath = path.join(
-      dirName,
-      "target/wasm32-wasi/debug/jco_test.wasm"
-    );
+    const filePath = path.join(dirName, `dist/${req.params.filename}`);
     const data = await fs.readFile(filePath);
     res.setHeader("Content-Type", "application/wasm");
     res.send(data);
