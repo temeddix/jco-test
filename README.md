@@ -14,5 +14,5 @@ npx jco wit target\wasm32-wasi\debug\jco_test.wasm
 ```
 
 ```bash
-node out_dir/jco_test.js
+node entry.js
 ```
