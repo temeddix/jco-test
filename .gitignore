@@ -16,3 +16,5 @@ Cargo.lock
 # JavaScript related
 /node_modules/
 /out_dir/
+/out_dir_local/
+/dist/

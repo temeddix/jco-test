@@ -2,17 +2,15 @@
 
 ```bash
 cargo component build
-```
-
-```bash
-npx jco transpile target\wasm32-wasi\debug\jco_test.wasm -o out_dir
-# npx jco transpile target\wasm32-wasi\debug\jco_test.wasm --minify -o out_dir
-```
-
-```bash
+npx jco transpile target\wasm32-wasi\debug\jco_test.wasm -o out_dir_local
 npx jco wit target\wasm32-wasi\debug\jco_test.wasm
+node local.js
 ```
 
 ```bash
-node entry.js
+cargo component build
+npx jco transpile target\wasm32-wasi\debug\jco_test.wasm -o out_dir --no-nodejs-compat
+npx jco wit target\wasm32-wasi\debug\jco_test.wasm
+npx webpack
+node server.js
 ```
