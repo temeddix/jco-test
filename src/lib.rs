@@ -5,8 +5,10 @@ struct Component;
 
 impl Guest for Component {
     fn hello_world() -> String {
-        // std::thread::spawn(|| println!("YAHOO"));
         println!("YAHOOOO");
+        let now = std::time::Instant::now();
+        println!("{now:?}");
+        std::thread::spawn(|| println!("YAHOO"));
         "Hello, World!".to_string()
     }
 }
