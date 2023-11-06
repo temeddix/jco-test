@@ -18,16 +18,9 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/:filename", async (req, res) => {
-  try {
-    const filePath = path.join(dirName, `dist/${req.params.filename}`);
-    const data = await fs.readFile(filePath);
-    res.setHeader("Content-Type", "application/wasm");
-    res.send(data);
-  } catch (err) {
-    res.status(404).send("File not found");
-  }
-});
+app.use("/out_dir", express.static(path.join(dirName, "out_dir")));
+
+app.use("/packages", express.static(path.join(dirName, "packages")));
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
