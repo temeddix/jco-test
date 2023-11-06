@@ -9,7 +9,7 @@ const port = 7777;
 
 app.get("/", async (req, res) => {
   try {
-    const filePath = path.join(dirName, "index.html");
+    const filePath = path.join(dirName, "browser/index.html");
     const data = await fs.readFile(filePath);
     res.setHeader("Content-Type", "text/html");
     res.send(data);
@@ -18,9 +18,7 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.use("/out_dir", express.static(path.join(dirName, "out_dir")));
-
-app.use("/packages", express.static(path.join(dirName, "packages")));
+app.use("/", express.static(path.join(dirName, "browser")));
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
