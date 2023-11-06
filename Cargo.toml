@@ -13,5 +13,6 @@ crate-type = ["cdylib"]
 
 [package.metadata.component]
 package = "component:jco-test"
+adapter = "wasi_snapshot_preview1.wasm"
 
 [package.metadata.component.dependencies]

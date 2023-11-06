@@ -1,5 +1,6 @@
 {
   "dependencies": {
     "@bytecodealliance/jco": "^0.13.2"
-  }
+  },
+  "type": "module"
 }
