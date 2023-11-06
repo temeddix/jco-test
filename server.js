@@ -18,17 +18,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/main.js", async (req, res) => {
-  try {
-    const filePath = path.join(dirName, "dist/main.js");
-    const data = await fs.readFile(filePath);
-    res.setHeader("Content-Type", "text/javascript");
-    res.send(data);
-  } catch (err) {
-    res.status(404).send("File not found");
-  }
-});
-
 app.get("/:filename", async (req, res) => {
   try {
     const filePath = path.join(dirName, `dist/${req.params.filename}`);
