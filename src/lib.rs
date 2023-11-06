@@ -8,7 +8,7 @@ impl Guest for Component {
         println!("YAHOOOO");
         let now = std::time::Instant::now();
         println!("{now:?}");
-        let test_text = std::fs::read("test.txt");
+        let test_text = std::fs::read("file_test.txt");
         println!("{test_text:?}");
         std::thread::spawn(|| println!("YAHOO"));
         "Hello, World!".to_string()
