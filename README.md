@@ -1,5 +1,12 @@
 # jco-test
 
+Get the system ready:
+
+```bash
+cargo install cargo-component
+npm install
+```
+
 To run locally on NodeJS:
 
 ```bash
