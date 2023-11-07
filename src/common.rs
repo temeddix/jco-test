@@ -50,16 +50,16 @@ fn request_web(url: &str) -> String {
                     let body = response_parts[1];
                     return body.to_owned();
                 } else {
-                    return String::from("No valid response 1");
+                    return String::from("No valid response (1)");
                 }
             } else {
-                return String::from("No valid response 2");
+                return String::from("No valid response (2)");
             }
         } else {
-            return String::from("No valid response 3");
+            return String::from("No valid response (3)");
         }
     } else {
-        return String::from("No valid response 4");
+        return String::from("No valid response (4)");
     }
 }
 
