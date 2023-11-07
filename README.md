@@ -7,7 +7,13 @@ cargo install cargo-component
 npm install
 ```
 
-To run locally on NodeJS:
+Run as a native executable
+
+```bash
+cargo run
+```
+
+Run locally on NodeJS:
 
 ```bash
 cargo component build
@@ -15,7 +21,7 @@ npx jco transpile target/wasm32-wasi/debug/jco_test.wasm -o nodejs/out_dir
 node nodejs/main.js
 ```
 
-To serve for browsers:
+Serve for browsers:
 
 ```bash
 cargo component build
