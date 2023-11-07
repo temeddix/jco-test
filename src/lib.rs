@@ -10,3 +10,8 @@ impl Guest for Component {
         common::start()
     }
 }
+
+#[allow(dead_code)]
+fn main() {
+    common::start();
+}
