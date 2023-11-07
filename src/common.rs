@@ -4,17 +4,21 @@ use std::net::TcpStream;
 use std::str;
 
 pub fn start() -> String {
+    // Time IO
     println!("YAHOOOO");
     let now = std::time::Instant::now();
     println!("{now:?}");
 
+    // File IO
     let test_text = std::fs::read("nodejs/file_test.txt");
     println!("{test_text:?}");
 
+    // Network IO
     let url = "http://jsonplaceholder.typicode.com/todos/1";
     let response_body = request_web(url);
     println!("{response_body}");
 
+    // Threads
     std::thread::spawn(|| println!("YAHOO"));
     "Hello, World!".to_string()
 }
