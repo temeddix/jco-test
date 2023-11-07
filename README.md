@@ -7,7 +7,7 @@ cargo install cargo-component
 npm install
 ```
 
-Run as a native executable. Uncomment `[[bin]]` section in `Cargo.toml` first.
+Run as a native executable. Uncomment the `[[bin]]` section in `Cargo.toml` file first.
 
 ```bash
 cargo run
