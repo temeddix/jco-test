@@ -1,19 +1,19 @@
 # jco-test
 
-Get the system ready:
+Get the system ready.
 
 ```bash
 cargo install cargo-component
 npm install
 ```
 
-Run as a native executable(Uncomment `[[bin]]` section in `Cargo.toml` first)
+Run as a native executable. Uncomment `[[bin]]` section in `Cargo.toml` first.
 
 ```bash
 cargo run
 ```
 
-Run locally on NodeJS:
+Run locally on NodeJS.
 
 ```bash
 cargo component build
@@ -21,7 +21,7 @@ npx jco transpile target/wasm32-wasi/debug/jco_test.wasm -o nodejs/out_dir
 node nodejs/main.js
 ```
 
-Serve for browsers:
+Serve for browsers.
 
 ```bash
 cargo component build
@@ -29,7 +29,7 @@ npx jco transpile target/wasm32-wasi/debug/jco_test.wasm -o browser/out_dir --no
 node server.js
 ```
 
-Other commands:
+Other commands.
 
 ```bash
 npx jco wit target/wasm32-wasi/debug/jco_test.wasm
