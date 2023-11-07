@@ -1,157 +1,183 @@
-export class IgnoreStream {
-    read (_len) {
-      return [new Uint8Array([]), 'ended'];
-    }
-    write (_bytes) {
-    }
+let id = 0;
+
+const symbolDispose = Symbol.dispose || Symbol.for('dispose');
+
+class Error {
+  constructor (msg) {
+    this.msg = msg;
   }
-  
+  toDebugString () {
+    return this.msg;
+  }
+}
+
+/**
+ * @typedef {{
+ *   read?: (len: BigInt) => Uint8Array,
+ *   blockingRead: (len: BigInt) => Uint8Array,
+ *   skip?: (len: BigInt) => BigInt,
+ *   blockingSkip?: (len: BigInt) => BigInt,
+ *   subscribe: () => void,
+ *   drop?: () => void,
+ * }} InputStreamHandler
+ * 
+ * @typedef {{
+ *   checkWrite?: () -> BigInt,
+ *   write: (buf: Uint8Array) => BigInt,
+ *   blockingWriteAndFlush?: (buf: Uint8Array) => void,
+ *   flush?: () => void,
+ *   blockingFlush: () => void,
+ *   writeZeroes?: (len: BigInt) => void,
+ *   blockingWriteZeroes?: (len: BigInt) => void,
+ *   blockingWriteZeroesAndFlush?: (len: BigInt) => void,
+ *   splice?: (src: InputStream, len: BigInt) => BigInt,
+ *   blockingSplice?: (src: InputStream, len: BigInt) => BigInt,
+ *   forward?: (src: InputStream) => void,
+ *   subscribe?: () => void,
+ *   drop?: () => void,
+ * }} OutputStreamHandler
+ * 
+ **/
+
+class InputStream {
   /**
-   * @typedef {{ read: (len: number) => [Uint8Array, 'open' | 'ended'], drop?: () => {} }} ReadableStream
-   * @typedef {{ write: (buf: Uint8Array) {}, drop?: () => {}, flush?: () => {}, check?: () => BigInt }} WriteableStream
+   * @param {InputStreamHandler} handler
    */
-  
-  // NOTE: pending asyncify work, all stream methods are synchronous and blocking
-  export class Io {
-    constructor (
-      stdout = new IgnoreStream(),
-      stderr = new IgnoreStream(),
-      stdin = new IgnoreStream()
-    ) {
-      this.streamCnt = 3;
-      this.streamEntries = {
-        0: stdin,
-        1: stdout,
-        2: stderr
-      }
-  
-      const io = this;
-      this.streams = {
-        read(s, len) {
-          return io.getStream(s).read(len);
-        },
-        blockingRead(s, len) {
-          return io.getStream(s).read(len);
-        },
-        skip(s, _len) {
-          console.log(`[streams] Skip ${s}`);
-        },
-        blockingSkip(s, _len) {
-          console.log(`[streams] Blocking skip ${s}`);
-        },
-        subscribeToInputStream(s) {
-          console.log(`[streams] Subscribe to input stream ${s}`);
-        },
-        dropInputStream(s) {
-          io.dropStream(s);
-        },
-        checkWrite(s) {
-          return io.getStream(s).check() || 1000_000n;
-        },
-        write(s, buf) {
-          io.getStream(s).write(buf);
-        },
-        blockingWriteAndFlush(s, buf) {
-          const stream = io.getStream(s);
-          stream.write(buf);
-          if (stream.flush)
-            stream.flush();
-        },
-        flush(s) {
-          const stream = io.getStream(s);
-          if (stream.flush)
-            stream.flush();
-        },
-        blockingFlush(s) {
-          const stream = io.getStream(s);
-          if (stream.flush)
-            stream.flush();
-        },
-        writeZeroes(s, _len) {
-          console.log(`[streams] Write zeroes ${s}`);
-        },
-        blockingWriteZeroes(s, _len) {
-          console.log(`[streams] Blocking write zeroes ${s}`);
-        },
-        splice(s, _src, _len) {
-          console.log(`[streams] Splice ${s}`);
-        },
-        blockingSplice(s, _src, _len) {
-          console.log(`[streams] Blocking splice ${s}`);
-        },
-        forward(s, _src) {
-          console.log(`[streams] Forward ${s}`);
-        },
-        subscribeToOutputStream(s) {
-          console.log(`[streams] Subscribe to output stream ${s}`);
-        },
-        dropOutputStream(s) {
-          io.dropStream(s);
-        }
-      };
-    }
-  
-    /**
-     * 
-     * @param {ReadableStream | WriteableStream} stream 
-     * @returns {number}
-     */
-    createStream (stream) {
-      this.streamEntries[this.streamCnt] = stream;
-      return this.streamCnt++;
-    }
-  
-    /**
-     * @param {number} sid 
-     * @returns {ReadableStream | WriteableStream}
-     */
-    getStream (sid) {
-      const stream = this.streamEntries[sid];
-      if (!stream) throw new Error();
-      return stream;
-    }
-  
-    dropStream (sid) {
-      const stream = this.streamEntries[sid];
-      if (stream.drop) stream.drop();
-      delete this.streamEntries[sid];
-    }
+  constructor (handler) {
+    if (!handler)
+      console.trace('no handler');
+    this.id = ++id;
+    this.handler = handler;
   }
-  
-  // buffer until the next newline
-  export class NewlineBufferStream {
-    constructor (handler) {
-      this.bufferLen = 0;
-      this.bufferCapacity = 1024;
-      this.buffer = new Uint8Array(1024);
-      this.handler = handler;
-    }
-    write (bytes) {
-      const newlineIdx = bytes.lastIndexOf(10);
-      if (newlineIdx === -1) {
-        this.#addToBuffer(bytes);
-      } else {
-        this.#addToBuffer(bytes.slice(0, newlineIdx + 1));
-        this.handler(new TextDecoder().decode(this.buffer.slice(0, this.bufferLen)));
-        this.bufferLen = 0;
-        this.#addToBuffer(bytes.slice(newlineIdx + 1));
-      }
-    }
-    #addToBuffer (bytes) {
-      if (bytes.byteLength + this.bufferLen > this.bufferCapacity) {
-        this.bufferCapacity *= 2;
-        const buffer = new Uint8Array(this.bufferCapacity);
-        buffer.set(this.buffer);
-        this.buffer = buffer;
-      }
-      this.buffer.set(bytes, this.bufferLen);
-      this.bufferLen += bytes.byteLength;
-    }
+  read(len) {
+    if (this.handler.read)
+      return this.handler.read(len);
+    return this.handler.blockingRead.call(this, len);
   }
-  
-  export const _io = new Io(
-    new NewlineBufferStream(console.log.bind(console)),
-    new NewlineBufferStream(console.error.bind(console))
-  );
-  
-  export const streams = _io.streams;
+  blockingRead(len) {
+    return this.handler.blockingRead.call(this, len);
+  }
+  skip(len) {
+    if (this.handler.skip)
+      return this.handler.skip.call(this, len);
+    if (this.handler.read) {
+      const bytes = this.handler.read.call(this, len);
+      return BigInt(bytes.byteLength);
+    }
+    return this.blockingSkip.call(this, len);
+  }
+  blockingSkip(len) {
+    if (this.handler.blockingSkip)
+      return this.handler.blockingSkip.call(this, len);
+    const bytes = this.handler.blockingRead.call(this, len);
+    return BigInt(bytes.byteLength);
+  }
+  subscribe() {
+    console.log(`[streams] Subscribe to input stream ${this.id}`);
+  }
+  [symbolDispose] () {
+    if (this.handler.drop)
+      this.handler.drop.call(this);
+  }
+}
+
+class OutputStream {
+  /**
+   * @param {OutputStreamHandler} handler
+   */
+  constructor (handler) {
+    if (!handler)
+      console.trace('no handler');
+    this.id = ++id;
+    this.open = true;
+    this.handler = handler;
+  }
+  checkWrite(len) {
+    if (!this.open)
+      return 0n;
+    if (this.handler.checkWrite)
+      return this.handler.checkWrite.call(this, len);
+    return 1_000_000n;
+  }
+  write(buf) {
+    this.handler.write.call(this, buf);
+  }
+  blockingWriteAndFlush(buf) {
+    /// Perform a write of up to 4096 bytes, and then flush the stream. Block
+    /// until all of these operations are complete, or an error occurs.
+    ///
+    /// This is a convenience wrapper around the use of `check-write`,
+    /// `subscribe`, `write`, and `flush`, and is implemented with the
+    /// following pseudo-code:
+    ///
+    /// ```text
+    /// let pollable = this.subscribe();
+    /// while !contents.is_empty() {
+    ///     // Wait for the stream to become writable
+    ///     poll-one(pollable);
+    ///     let Ok(n) = this.check-write(); // eliding error handling
+    ///     let len = min(n, contents.len());
+    ///     let (chunk, rest) = contents.split_at(len);
+    ///     this.write(chunk  );            // eliding error handling
+    ///     contents = rest;
+    /// }
+    /// this.flush();
+    /// // Wait for completion of `flush`
+    /// poll-one(pollable);
+    /// // Check for any errors that arose during `flush`
+    /// let _ = this.check-write();         // eliding error handling
+    /// ```
+    this.handler.write.call(this, buf);
+  }
+  flush() {
+    if (this.handler.flush)
+      this.handler.flush.call(this);
+  }
+  blockingFlush() {
+    this.open = true;
+  }
+  writeZeroes(len) {
+    this.write.call(this, new Uint8Array(Number(len)));
+  }
+  blockingWriteZeroes(len) {
+    this.blockingWrite.call(this, new Uint8Array(Number(len)));
+  }
+  blockingWriteZeroesAndFlush(len) {
+    this.blockingWriteAndFlush.call(this, new Uint8Array(Number(len)));
+  }
+  splice(src, len) {
+    const spliceLen = Math.min(len, this.checkWrite.call(this));
+    const bytes = src.read(spliceLen);
+    this.write.call(this, bytes);
+    return bytes.byteLength;
+  }
+  blockingSplice(_src, _len) {
+    console.log(`[streams] Blocking splice ${this.id}`);
+  }
+  forward(_src) {
+    console.log(`[streams] Forward ${this.id}`);
+  }
+  subscribe() {
+    console.log(`[streams] Subscribe to output stream ${this.id}`);
+  }
+  [symbolDispose]() {
+  }
+}
+
+export const streams = { Error, InputStream, OutputStream };
+
+class Pollable {}
+
+function pollList (_list) {
+  // TODO
+}
+
+function pollOne (_poll) {
+  // TODO
+}
+
+export const poll = {
+  Pollable,
+  pollList,
+  pollOne
+};

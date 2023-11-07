@@ -2,7 +2,8 @@ import { argv, env, cwd } from 'node:process';
 import { streams } from '../common/io.js';
 const { InputStream, OutputStream } = streams;
 
-let _env = Object.entries(env), _args = argv, _cwd = cwd();
+let _env = Object.entries(env), _args = argv.slice(1), _cwd = cwd();
+const symbolDispose = Symbol.dispose || Symbol.for('dispose');
 
 export const environment = {
   getEnvironment () {
@@ -29,7 +30,7 @@ const stdinStream = new InputStream({
   subscribe () {
     // TODO
   },
-  drop () {
+  [symbolDispose] () {
     // TODO
   }
 });
@@ -39,7 +40,7 @@ const stdoutStream = new OutputStream({
   },
   blockingFlush () {
   },
-  drop () {
+  [symbolDispose] () {
   }
 });
 const stderrStream = new OutputStream({
@@ -49,7 +50,7 @@ const stderrStream = new OutputStream({
   blockingFlush () {
 
   },
-  drop () {
+  [symbolDispose] () {
 
   }
 });

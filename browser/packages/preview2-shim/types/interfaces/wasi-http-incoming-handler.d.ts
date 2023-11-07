@@ -6,17 +6,14 @@ export namespace WasiHttpIncomingHandler {
    * method, which allows execution to continue after the response has been
    * sent. This enables both streaming to the response body, and performing other
    * work.
-   *
+   * 
    * The implementor of this function must write a response to the
    * `response-outparam` before returning, or else the caller will respond
    * with an error on its behalf.
    */
-  export function handle(
-    request: IncomingRequest,
-    responseOut: ResponseOutparam
-  ): void;
+  export function handle(request: IncomingRequest, responseOut: ResponseOutparam): void;
 }
-import type { IncomingRequest } from "./wasi-http-types.js";
+import type { IncomingRequest } from '../interfaces/wasi-http-types.js';
 export { IncomingRequest };
-import type { ResponseOutparam } from "./wasi-http-types.js";
+import type { ResponseOutparam } from '../interfaces/wasi-http-types.js';
 export { ResponseOutparam };

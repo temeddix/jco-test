@@ -1,7 +1,7 @@
 export namespace WasiClocksMonotonicClock {
   /**
    * Read the current value of the clock.
-   *
+   * 
    * The clock is monotonic, therefore calling this function repeatedly will
    * produce a sequence of non-decreasing values.
    */
@@ -16,7 +16,7 @@ export namespace WasiClocksMonotonicClock {
    */
   export function subscribe(when: Instant, absolute: boolean): Pollable;
 }
-import type { Pollable } from "./wasi-io-poll.js";
+import type { Pollable } from '../interfaces/wasi-io-poll.js';
 export { Pollable };
 /**
  * A timestamp in nanoseconds.

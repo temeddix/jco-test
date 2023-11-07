@@ -1,11 +1,11 @@
 export namespace WasiHttpTypes {
   /**
    * Construct an HTTP Fields.
-   *
+   * 
    * The list represents each key-value pair in the Fields. Keys
    * which have multiple values are represented by multiple entries in this
    * list with the same key.
-   *
+   * 
    * The tuple is a pair of the field key, represented as a string, and
    * Value, represented as a list of bytes. In a valid Fields, all keys
    * and values are valid UTF-8 strings. However, values are not always
@@ -30,7 +30,7 @@ export namespace WasiHttpTypes {
   /**
    * Retrieve the full set of keys and values in the Fields. Like the
    * constructor, the list represents each key-value pair.
-   *
+   * 
    * The outer list represents each key-value pair in the Fields. Keys
    * which have multiple values are represented by multiple entries in this
    * list with the same key.
@@ -54,7 +54,7 @@ export namespace WasiHttpTypes {
    */
   /**
    * Returns the `headers` from the request.
-   *
+   * 
    * The `headers` returned are a child resource: it must be dropped before
    * the parent `incoming-request` is dropped. Dropping this
    * `incoming-request` before all children are dropped will trap.
@@ -74,7 +74,7 @@ export namespace WasiHttpTypes {
   /**
    * Set the value of the `response-outparam` to either send a response,
    * or indicate an error.
-   *
+   * 
    * This method consumes the `response-outparam` to ensure that it is
    * called at most once. If it is never called, the implementation
    * will respond with an error.
@@ -93,14 +93,14 @@ export namespace WasiHttpTypes {
    */
   /**
    * Returns the contents of the body, as a stream of bytes.
-   *
+   * 
    * Returns success on first call: the stream representing the contents
    * can be retrieved at most once. Subsequent calls will return error.
-   *
+   * 
    * The returned `input-stream` resource is a child: it must be dropped
    * before the parent `incoming-body` is dropped, or consumed by
    * `incoming-body.finish`.
-   *
+   * 
    * This invariant ensures that the implementation can determine whether
    * the user is consuming the contents of the body, waiting on the
    * `future-trailers` to be ready, or neither. This allows for network
@@ -122,10 +122,10 @@ export namespace WasiHttpTypes {
   /**
    * Returns the contents of the trailers, or an error which occured,
    * once the future is ready.
-   *
+   * 
    * The outer `option` represents future readiness. Users can wait on this
    * `option` to become `some` using the `subscribe` method.
-   *
+   * 
    * The `result` represents that either the HTTP Request or Response body,
    * as well as any trailers, were received successfully, or that an error
    * occured receiving them.
@@ -136,20 +136,20 @@ export namespace WasiHttpTypes {
   export { OutgoingResponse };
   /**
    * Returns the resource corresponding to the outgoing Body for this Response.
-   *
+   * 
    * Returns success on the first call: the `outgoing-body` resource for
    * this `outgoing-response` can be retrieved at most once. Sunsequent
    * calls will return error.
-   *
+   * 
    * FIXME: rename this method to `body`.
    */
   /**
    * Returns a stream for writing the body contents.
-   *
+   * 
    * The returned `output-stream` is a child resource: it must be dropped
    * before the parent `outgoing-body` resource is dropped (or finished),
    * otherwise the `outgoing-body` drop or `finish` will trap.
-   *
+   * 
    * Returns success on the first call: the `output-stream` resource for
    * this `outgoing-body` may be retrieved at most once. Subsequent calls
    * will return error.
@@ -169,14 +169,14 @@ export namespace WasiHttpTypes {
   export { FutureIncomingResponse };
   /**
    * Returns the incoming HTTP Response, or an error, once one is ready.
-   *
+   * 
    * The outer `option` represents future readiness. Users can wait on this
    * `option` to become `some` using the `subscribe` method.
-   *
+   * 
    * The outer `result` is used to retrieve the response or error at most
    * once. It will be success on the first call in which the outer option
    * is `some`, and error on subsequent calls.
-   *
+   * 
    * The inner `result` represents that either the incoming HTTP Response
    * status and headers have recieved successfully, or that an error
    * occured. Errors may also occur while consuming the response body,
@@ -184,96 +184,82 @@ export namespace WasiHttpTypes {
    * `output-stream` child.
    */
 }
-import type { InputStream } from "./wasi-io-streams.js";
+import type { InputStream } from '../interfaces/wasi-io-streams.js';
 export { InputStream };
-import type { OutputStream } from "./wasi-io-streams.js";
+import type { OutputStream } from '../interfaces/wasi-io-streams.js';
 export { OutputStream };
-import type { Pollable } from "./wasi-io-poll.js";
+import type { Pollable } from '../interfaces/wasi-io-poll.js';
 export { Pollable };
 /**
  * This type corresponds to HTTP standard Methods.
  */
-export type Method =
-  | MethodGet
-  | MethodHead
-  | MethodPost
-  | MethodPut
-  | MethodDelete
-  | MethodConnect
-  | MethodOptions
-  | MethodTrace
-  | MethodPatch
-  | MethodOther;
+export type Method = MethodGet | MethodHead | MethodPost | MethodPut | MethodDelete | MethodConnect | MethodOptions | MethodTrace | MethodPatch | MethodOther;
 export interface MethodGet {
-  tag: "get";
+  tag: 'get',
 }
 export interface MethodHead {
-  tag: "head";
+  tag: 'head',
 }
 export interface MethodPost {
-  tag: "post";
+  tag: 'post',
 }
 export interface MethodPut {
-  tag: "put";
+  tag: 'put',
 }
 export interface MethodDelete {
-  tag: "delete";
+  tag: 'delete',
 }
 export interface MethodConnect {
-  tag: "connect";
+  tag: 'connect',
 }
 export interface MethodOptions {
-  tag: "options";
+  tag: 'options',
 }
 export interface MethodTrace {
-  tag: "trace";
+  tag: 'trace',
 }
 export interface MethodPatch {
-  tag: "patch";
+  tag: 'patch',
 }
 export interface MethodOther {
-  tag: "other";
-  val: string;
+  tag: 'other',
+  val: string,
 }
 /**
  * This type corresponds to HTTP standard Related Schemes.
  */
 export type Scheme = SchemeHttp | SchemeHttps | SchemeOther;
 export interface SchemeHttp {
-  tag: "HTTP";
+  tag: 'HTTP',
 }
 export interface SchemeHttps {
-  tag: "HTTPS";
+  tag: 'HTTPS',
 }
 export interface SchemeOther {
-  tag: "other";
-  val: string;
+  tag: 'other',
+  val: string,
 }
 /**
  * TODO: perhaps better align with HTTP semantics?
  * This type enumerates the different kinds of errors that may occur when
  * initially returning a response.
  */
-export type Error =
-  | ErrorInvalidUrl
-  | ErrorTimeoutError
-  | ErrorProtocolError
-  | ErrorUnexpectedError;
+export type Error = ErrorInvalidUrl | ErrorTimeoutError | ErrorProtocolError | ErrorUnexpectedError;
 export interface ErrorInvalidUrl {
-  tag: "invalid-url";
-  val: string;
+  tag: 'invalid-url',
+  val: string,
 }
 export interface ErrorTimeoutError {
-  tag: "timeout-error";
-  val: string;
+  tag: 'timeout-error',
+  val: string,
 }
 export interface ErrorProtocolError {
-  tag: "protocol-error";
-  val: string;
+  tag: 'protocol-error',
+  val: string,
 }
 export interface ErrorUnexpectedError {
-  tag: "unexpected-error";
-  val: string;
+  tag: 'unexpected-error',
+  val: string,
 }
 /**
  * Field keys are always strings.
@@ -297,10 +283,10 @@ export type Trailers = Fields;
  * Parameters for making an HTTP Request. Each of these parameters is an
  * optional timeout, with the unit in milliseconds, applicable to the
  * transport layer of the HTTP protocol.
- *
+ * 
  * These timeouts are separate from any the user may use to bound a
  * blocking call to `wasi:io/poll.poll-list`.
- *
+ * 
  * FIXME: Make this a resource to allow it to be optionally extended by
  * future evolution of the standard and/or other interfaces at some later
  * date?
@@ -309,16 +295,16 @@ export interface RequestOptions {
   /**
    * The timeout for the initial connect to the HTTP Server.
    */
-  connectTimeoutMs?: number;
+  connectTimeoutMs?: number,
   /**
    * The timeout for receiving the first byte of the Response body.
    */
-  firstByteTimeoutMs?: number;
+  firstByteTimeoutMs?: number,
   /**
    * The timeout for receiving subsequent chunks of bytes in the Response
    * body stream.
    */
-  betweenBytesTimeoutMs?: number;
+  betweenBytesTimeoutMs?: number,
 }
 /**
  * This type corresponds to the HTTP standard Status Code.
@@ -326,13 +312,7 @@ export interface RequestOptions {
 export type StatusCode = number;
 
 export class OutgoingRequest {
-  constructor(
-    method: Method,
-    pathWithQuery: string | undefined,
-    scheme: Scheme | undefined,
-    authority: string | undefined,
-    headers: Headers
-  );
+  constructor(method: Method, pathWithQuery: string | undefined, scheme: Scheme | undefined, authority: string | undefined, headers: Headers)
   write(): OutgoingBody;
 }
 
@@ -342,19 +322,16 @@ export class IncomingBody {
 }
 
 export class ResponseOutparam {
-  static set(
-    param: ResponseOutparam,
-    response: Result<OutgoingResponse, Error>
-  ): void;
+  static set(param: ResponseOutparam, response: Result<OutgoingResponse, Error>): void;
 }
 
 export class OutgoingResponse {
-  constructor(statusCode: StatusCode, headers: Headers);
+  constructor(statusCode: StatusCode, headers: Headers)
   write(): OutgoingBody;
 }
 
 export class Fields {
-  constructor(entries: [FieldKey, FieldValue][]);
+  constructor(entries: [FieldKey, FieldValue][])
   get(name: FieldKey): FieldValue[];
   set(name: FieldKey, value: FieldValue[]): void;
   delete(name: FieldKey): void;
