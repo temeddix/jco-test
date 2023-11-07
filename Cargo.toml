@@ -11,9 +11,9 @@ cargo-component-bindings = "0.4.0"
 [lib]
 crate-type = ["cdylib"]
 
-[[bin]]
-name = "jco_test"
-path = "src/lib.rs"
+# [[bin]]
+# name = "jco_test_bin"
+# path = "src/lib.rs"
 
 [package.metadata.component]
 package = "component:jco-test"
