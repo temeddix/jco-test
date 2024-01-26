@@ -7,7 +7,8 @@ struct Component;
 
 impl Guest for Component {
     fn hello_world() -> String {
-        common::start()
+        common::start();
+        String::from("DUMMY")
     }
 }
 

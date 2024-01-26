@@ -4,7 +4,7 @@ use std::io::{BufReader, Read};
 use std::net::TcpStream;
 use std::str;
 
-pub fn start() -> String {
+pub fn start() {
     println!("YAHOOOO");
 
     // Current directory
@@ -15,10 +15,6 @@ pub fn start() -> String {
     let now = std::time::Instant::now();
     println!("{now:?}");
 
-    // File IO
-    let test_text = std::fs::read("nodejs/file_test.txt");
-    println!("{test_text:?}");
-
     // Network IO
     let url = "http://jsonplaceholder.typicode.com/todos/1";
     let response_body = request_web(url);
@@ -26,7 +22,11 @@ pub fn start() -> String {
 
     // Threads
     std::thread::spawn(|| println!("YAHOO"));
-    "Hello, World!".to_string()
+    "Hello, World!".to_string();
+
+    // File IO
+    let test_text = std::fs::read("nodejs/file_test.txt");
+    println!("{test_text:?}");
 }
 
 fn request_web(url: &str) -> String {
