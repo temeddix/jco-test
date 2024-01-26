@@ -1,6 +1,6 @@
+mod bindings;
 mod common;
 
-cargo_component_bindings::generate!();
 use bindings::Guest;
 
 struct Component;

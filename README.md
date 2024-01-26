@@ -3,6 +3,7 @@
 Get the system ready.
 
 ```bash
+rustup target add wasm32-wasi
 cargo install cargo-component
 npm install
 ```
