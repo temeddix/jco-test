@@ -4,8 +4,9 @@ use std::net::TcpStream;
 use std::str;
 
 pub fn start() -> String {
-    // Time IO
     println!("YAHOOOO");
+
+    // Time IO
     let now = std::time::Instant::now();
     println!("{now:?}");
 
