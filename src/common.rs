@@ -1,3 +1,4 @@
+use std::env;
 use std::io::Write;
 use std::io::{BufReader, Read};
 use std::net::TcpStream;
@@ -5,6 +6,10 @@ use std::str;
 
 pub fn start() -> String {
     println!("YAHOOOO");
+
+    // Current directory
+    let current_dir = env::current_dir().unwrap();
+    println!("{current_dir:?}");
 
     // Time IO
     let now = std::time::Instant::now();
