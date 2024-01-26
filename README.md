@@ -8,12 +8,6 @@ cargo install cargo-component
 npm install
 ```
 
-Run as a native executable. Uncomment the `[[bin]]` section in `Cargo.toml` file first.
-
-```bash
-cargo run
-```
-
 Run locally on NodeJS.
 
 ```bash
@@ -28,6 +22,12 @@ Serve for browsers.
 cargo component build
 npx jco transpile target/wasm32-wasi/debug/jco_test.wasm -o browser/out_dir --no-nodejs-compat
 node server.js
+```
+
+Run as a native executable. Uncomment the `[[bin]]` section in `Cargo.toml` file first.
+
+```bash
+cargo run
 ```
 
 Other commands.
